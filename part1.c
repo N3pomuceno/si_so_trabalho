@@ -12,6 +12,7 @@ void *identifier(void *id){
 }
 
 int main (void){
+
     // Definindo número de threads;
     int num_de_threads;
     printf("Quantas threads deseja criar?\n");
@@ -25,7 +26,7 @@ int main (void){
 
     for (int i = 0; i < num_de_threads; i++){
 
-        // Função para ciração de thread: thrd_create
+        // Função para criação de thread: thrd_create
         // Primeiro Argumento: thrd_t *__thr => Ponteiro para identificador da thread
         // Segundo  Argumento: thrd_start_t __func => Ponteiro para função que a thread irá executar
         // Terceiro Argumento: void *__arg => Argumento que pode ser levado para a função. 
