@@ -43,7 +43,7 @@ int main (void){
 // https://www.delftstack.com/pt/howto/c/pthread-get-thread-id-in-c/ 
 // https://stackoverflow.com/questions/21091000/how-to-get-thread-id-of-a-pthread-in-linux-c-program 
 //
-// Comentários importante:
+// Comentários importantes:
 // gettid() returns the caller's thread ID (TID). In a single-threaded process, the thread ID is equal
 // to the process ID (PID, as returned by getpid(2)).
 // In a multithreaded process, all threads have the same PID, but each one has a unique TID. 
@@ -55,13 +55,19 @@ int main (void){
 // an application generally doesn’t need to know about the kernel IDs (and won’t be portable if it depends on knowing them).
 // 
 // Extra:
-// Há 3 tipos de thread ID: pid, pthread id e tid;
-// - pid: Global e equivalente ao parent process id, pode ser pego utilizando getpid;
+// Há 3 tipos de ID no Linux: pid, pthread id e tid;
+// - pid: Global e equivalente ao parent process id, pode ser pego utilizando getpid; Num processo multithread
+// todas as threads tem o mesmo pid, contudo cada uma tem um tid único.
 // - pthread id (POSIX thread ID): Valor único do dentro do processo e somente na duração da devida thread. 
 // Não é único através do sistema, nem através das threads que já terminaram e começaram. NÃO é visível fora do programa.
 // Também é chamada de ID de Thread POSIX.
+// - tid: É possível encontrá-lo como gettid, valor único através do processo e através do sistema, acrescentado no Linux 2.4
+// e aparentemente não há em outras plataformas.
 //
-// Basicamente quando utilizando o gettid do sys, nós pegamos um PID, que é uma thread única do processo.
-// Já quando pegando o thrd_current, que está de acordo com os padrões do POSIX
-// ( Portable Operating System Interface for Unix) estamos pegando o um outro valor, que seria um ponteiro que aponta para algum estrutura,
-// dependendo da plataforma. 
+// Explicação:
+// Tendo em vista 3 tipos de id, a diferença dos threads id está entre pthread id e tid. 
+// Tid que é definido pela função do syscall, ele trás um número que é definido pelo kernel.
+// Já o POSIX thread Id, que a gente pega pelo thrd_current, detalhe que a sua biblioteca é muito similar 
+// em respeito com o POSIX standard, a gente vê que é definido pela implementação da thread. 
+// A diferença do número é porque a definição vem de lugares diferentes. Um você pega do sistema e outro da implementação.
+//
