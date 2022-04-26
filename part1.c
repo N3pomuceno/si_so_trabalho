@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <threads.h>
 
-void identifier (void *id){
+void *identifier(void *id){
     // Pegando parâmetro de identificação e passando para casting de long.
-    long ident;
-    ident = (long)id;
+    long ident = (intptr_t)id;
 
     // printf para colocar a frase desejada.
     printf ("Eu sou a thread %ld e meu ID é %lu", ident, thrd_current());
@@ -27,9 +27,9 @@ int main (void){
 
         // Função para ciração de thread: thrd_create
         // Primeiro Argumento: thrd_t *__thr => Ponteiro para identificador da thread
-        // Segundo Argumento : thrd_start_t __func => Ponteiro para função que a thread irá executar
+        // Segundo  Argumento: thrd_start_t __func => Ponteiro para função que a thread irá executar
         // Terceiro Argumento: void *__arg => Argumento que pode ser levado para a função. 
-        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)i);
+        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)(intptr_t)i);
         if (prot == thrd_error){
             printf("Erro na criação da thread\n");
             exit(1);
