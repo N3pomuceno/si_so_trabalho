@@ -90,13 +90,14 @@ int main(void) {
     argumentos.arg2 = B;
     argumentos.arg3 = dim;
 
+    int num_de_threads = 4;
+    thrd_t threads[num_de_threads];
+    int prot;
+    
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
     printf("Error: clock_gettime failed\n");
     exit(1);
     }
-    int num_de_threads = 4;
-    thrd_t threads[num_de_threads];
-    int prot;
     for (int k = 0; k < num_de_threads; k++) {
         argumentos.arg4 = k;
         prot = thrd_create(&threads[k], (thrd_start_t)soma, (void *)&argumentos);
