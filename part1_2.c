@@ -8,8 +8,7 @@
 void *identifier(void *id){
     long ident = (intptr_t)id;
     long ident2 = syscall(SYS_gettid);
-    printf ("Eu sou a thread %ld e meu ID pela threads.h é %lu,\njá pelo Sys/syscall é %lu.\n", ident, thrd_current(), ident2);
-    printf ("\n");
+    printf ("Eu sou a thread %ld e meu ID pela threads.h é %lu,\njá pelo Sys/syscall é %lu.\n\n", ident, thrd_current(), ident2);
 }
 
 int main (void){
@@ -36,3 +35,18 @@ int main (void){
     // Finaliza a atual execução de thread e libera recurso.
     thrd_exit(0);
 }
+
+// Claramente os valores das ID's são diferentes e eles podem ser explicados por um cara online:
+// Links de referência:
+// https://stackoverflow.com/questions/19350212/which-linux-syscall-is-used-to-get-a-threads-id 
+// https://linux.die.net/man/2/gettid
+//
+// Comentário importante:
+// gettid() returns the caller's thread ID (TID). In a single-threaded process, the thread ID is equal
+// to the process ID (PID, as returned by getpid(2)).
+// In a multithreaded process, all threads have the same PID, but each one has a unique TID. 
+// 
+// Explicação:
+// Basicamente quando utilizando o gettid do sys, nós pegamos um TID, que é uma thread única do processo.
+// Já quando pegando o thrd_current, estamos pegando o um outro valor, que seria um ponteiro que aponta para algum estrutura,
+// dependendo da plataforma. 
