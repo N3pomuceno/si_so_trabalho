@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <threads.h>
 
 void imprime(int **mat){
@@ -17,6 +18,9 @@ void *soma(){
 }
 
 int main(void) {
+    // Para marcação de tempo
+    struct timespec start, end;
+
     // Criação de matrizes A, B, C.
     int **A, **B, **C;
     int dim = 10;
@@ -40,20 +44,32 @@ int main(void) {
     //imprime(A);
 
     // CALCULO SEM THREAD (falta adicionar o tempo ainda)
+    if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
             C[i][j] = A[i][j] + B[i][j];
         }
     }
+        if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
+    // Tempo levado:
+    long tempo_levado = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("%ld\n", tempo_levado);
     imprime(C);
 
     // Criação de 4 threads
-    int num_de_threads = 4;
-    thrd_t threads[num_de_threads];
-    int prot;
-    for (int k = 0; k < num_de_threads; k++) {
-        prot = thrd_create(&threads[k], (thrd_start_t)soma, (void *)k);
-    }
+    
+    // int num_de_threads = 4;
+    // thrd_t threads[num_de_threads];
+    // int prot;
+    // for (int k = 0; k < num_de_threads; k++) {
+    //     prot = thrd_create(&threads[k], (thrd_start_t)soma, (void *)k);
+    // }
 
     // Liberando as matrizes
     for (int i = dim -1; i >=0; i--){
