@@ -93,7 +93,7 @@ int main(void) {
     int num_de_threads = 4;
     thrd_t threads[num_de_threads];
     int prot;
-    
+
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
     printf("Error: clock_gettime failed\n");
     exit(1);
@@ -110,7 +110,7 @@ int main(void) {
 
     // Tempo levado:
     long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("%ld\n", tempo_levado_com_thread);
+    printf("Quantidade de nanosegundos que levou para fazer a soma com thread: %ld ns.\n", tempo_levado_com_thread);
 
     // Liberando as matrizes
     for (int i = dim -1; i >=0; i--){
