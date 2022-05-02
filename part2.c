@@ -41,19 +41,19 @@ typedef struct arg_struct {
 void *soma(void *param){
     int i, j;
     Args *args = (Args *)param;
-    if (args-> arg4 == 1) {
+    if (args-> arg5 == 1) {
         for (i=0; i <500; i++){
             for (j = 0; j <500; j++){
                 args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
             }
         }
-    } else if ( args -> arg4 == 2 ) {
+    } else if ( args -> arg5 == 2 ) {
         for (i=500; i <1000; i++){
             for (j = 0; j <500; j++){
                 args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
             }
         }
-    } else if ( args -> arg4 == 3 ) {
+    } else if ( args -> arg5 == 3 ) {
         for (i=0; i <500; i++){
             for (j = 500; j <1000; j++){
                 args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
@@ -118,7 +118,8 @@ int main(void) {
     Args argumentos;
     argumentos.arg1 = A;
     argumentos.arg2 = B;
-    argumentos.arg3 = dim;
+    argumentos.arg3 = C;
+    argumentos.arg4 = dim;
 
     int num_de_threads = 4;
     thrd_t threads[num_de_threads];
@@ -129,7 +130,7 @@ int main(void) {
     exit(1);
     }
     for (int k = 0; k < num_de_threads; k++) {
-        argumentos.arg4 = k;
+        argumentos.arg5 = k;
         prot = thrd_create(&threads[k], (thrd_start_t)soma, (void *)&argumentos);
     }
     for (int l = 0; l < num_de_threads; l++) {
