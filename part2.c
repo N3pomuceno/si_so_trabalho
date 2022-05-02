@@ -21,21 +21,51 @@ https://www.ibm.com/docs/en/aix/7.2?topic=processes-changing-priority-running-pr
 typedef struct arg_struct {
     int **arg1; // Matriz A
     int **arg2; // Matriz B
-    int arg3;   // Dimensão
-    int arg4;   // Identificação de Thread
+    int **arg3; // Matriz C
+    int arg4;   // Dimensão
+    int arg5;   // Identificação de Thread
 }Args;
 
-void imprime(int **mat){
-    for (int i = 0; i <10; i++){
-        for (int j = 0; j < 10; j++){
-            printf("%d ", mat[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
+// void imprime(int **mat){
+//     for (int i = 0; i <1000; i++){
+//         for (int j = 0; j < 1000; j++){
+//             printf("%d ", mat[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+// }
+
+
 
 void *soma(void *param){
+    int i, j;
+    Args *args = (Args *)param;
+    if (args-> arg4 == 1) {
+        for (i=0; i <500; i++){
+            for (j = 0; j <500; j++){
+                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+            }
+        }
+    } else if ( args -> arg4 == 2 ) {
+        for (i=500; i <1000; i++){
+            for (j = 0; j <500; j++){
+                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+            }
+        }
+    } else if ( args -> arg4 == 3 ) {
+        for (i=0; i <500; i++){
+            for (j = 500; j <1000; j++){
+                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+            }
+        }
+    } else {
+        for (i=500; i < 1000; i++){
+            for (j = 500; j <1000; j++){
+                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+            }
+        }
+    }
 
 }
 
@@ -80,7 +110,7 @@ int main(void) {
     }
     // Tempo levado:
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer a soma sem thread: %ld ns.\n", tempo_levado_sem_thread);
+    printf("Quantidade de nanosegundos que levou para fazer a soma sem thread:\n %ld ns.\n", tempo_levado_sem_thread);
 
 
     // CALCULO COM 4 THREADS:
@@ -102,6 +132,9 @@ int main(void) {
         argumentos.arg4 = k;
         prot = thrd_create(&threads[k], (thrd_start_t)soma, (void *)&argumentos);
     }
+    for (int l = 0; l < num_de_threads; l++) {
+        thrd_join(threads[l], NULL);
+    }
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
     printf("Error: clock_gettime failed\n");
@@ -110,7 +143,7 @@ int main(void) {
 
     // Tempo levado:
     long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer a soma com thread: %ld ns.\n", tempo_levado_com_thread);
+    printf("Quantidade de nanosegundos que levou para fazer a soma com thread:\n %ld ns.\n", tempo_levado_com_thread);
 
     // Liberando as matrizes
     for (int i = dim -1; i >=0; i--){
