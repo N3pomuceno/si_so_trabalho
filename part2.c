@@ -5,15 +5,19 @@
 
 /* 
 COISAS PARA FAZER:
-referência: https://stackoverflow.com/questions/19527965/cast-to-pointer-from-integer-of-different-size-pthread-code
-
-- Começar a escrever a função soma, levando em conta os parâmetros dentro do struct para poder aplicar 
-as somas das duas matrizes levando em conta qual thread está, tentando mudar de quadrante a partir do número k.
-- Ler o material de prioridade e troca de prioridade sobre o processo.
-Links: 
+referência: 
+https://stackoverflow.com/questions/19527965/cast-to-pointer-from-integer-of-different-size-pthread-code
 https://www.tecmint.com/set-linux-process-priority-using-nice-and-renice-commands/amp/ 
 https://www.ibm.com/docs/en/aix/7.2?topic=processes-changing-priority-running-process-renice-command
-- Talvez ter que descobrir o PID para ter que alguma ideia de como alterar a prioridade do programa.
+
+Comando para prioridade:
+sudo nice --adjustment=-20 ./a.out
+
+CASOS PARA MOSTRAR EM VÍDEO:
+1000 repetições de soma que faz o programa rodar em torno de 4 segundos.
+
+10000 repetições de soma, que faz o programa rodar em torno de 40 segundos. Mostrar o htop, pegando somente um processador 
+sem thread, e com threads que trabalha com 4 processadores.
 
 */
 
@@ -40,29 +44,38 @@ typedef struct arg_struct {
 
 void *soma(void *param){
     int i, j;
+    int rep = 1000;
     Args *args = (Args *)param;
     if (args-> arg5 == 1) {
-        for (i=0; i <500; i++){
-            for (j = 0; j <500; j++){
-                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+        for (i=0; i < (args->arg4)/2; i++){
+            for (j = 0; j <(args->arg4)/2; j++){
+                for (int k = 0; k < rep; k++){
+                    args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+                }
             }
         }
     } else if ( args -> arg5 == 2 ) {
-        for (i=500; i <1000; i++){
-            for (j = 0; j <500; j++){
-                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+        for (i=(args->arg4)/2; i <(args->arg4); i++){
+            for (j = 0; j <(args->arg4)/2; j++){
+                for (int k = 0; k < rep; k++){
+                    args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+                }
             }
         }
     } else if ( args -> arg5 == 3 ) {
-        for (i=0; i <500; i++){
-            for (j = 500; j <1000; j++){
-                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+        for (i=0; i <(args->arg4)/2; i++){
+            for (j = (args->arg4)/2; j <(args->arg4); j++){
+                for (int k = 0; k < rep; k++){
+                    args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+                }
             }
         }
     } else {
-        for (i=500; i < 1000; i++){
-            for (j = 500; j <1000; j++){
-                args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+        for (i=(args->arg4)/2; i < (args->arg4); i++){
+            for (j = (args->arg4)/2; j <(args->arg4); j++){
+                for (int k = 0; k < rep; k++){
+                    args->arg3[i][j] = args->arg1[i][j] + args->arg2[i][j];
+                }
             }
         }
     }
@@ -101,7 +114,9 @@ int main(void) {
     }
     for (int i = 0; i < dim; i++) {
         for (int j = 0; j < dim; j++) {
-            C[i][j] = A[i][j] + B[i][j];
+            for (int k = 0; k < 1000; k++) {
+                C[i][j] = A[i][j] + B[i][j];
+            }
         }
     }
         if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
@@ -110,7 +125,7 @@ int main(void) {
     }
     // Tempo levado:
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer a soma sem thread:\n %ld ns.\n", tempo_levado_sem_thread);
+    printf("Quantidade de nanosegundos que levou para fazer a soma sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
 
     // CALCULO COM 4 THREADS:
@@ -144,7 +159,10 @@ int main(void) {
 
     // Tempo levado:
     long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer a soma com thread:\n %ld ns.\n", tempo_levado_com_thread);
+    printf("Quantidade de nanosegundos que levou para fazer a soma com thread:\n %'ld ns.\n", tempo_levado_com_thread);
+
+    double razao = tempo_levado_sem_thread / (float)tempo_levado_com_thread;
+    printf("Razão entre tempos: \n %f\n", razao);
 
     // Liberando as matrizes
     for (int i = dim -1; i >=0; i--){
@@ -156,5 +174,5 @@ int main(void) {
     free(B);
     free(C);
 
-    thrd_exit(0);
+    return 0;
 }
