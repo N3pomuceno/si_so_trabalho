@@ -12,6 +12,13 @@ Serão 3 casos para serem verificados:
 
 */
 
+void imprime(int *vet,int tam){
+    for (int i=0; i < tam; i++){
+        printf("%d ",vet[i]);
+    }
+    printf("\n");
+}
+
 void *remover () {
 
 }
@@ -31,12 +38,26 @@ int main () {
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
+    imprime (vet, tam);
 
-    //Caso1:
+    //Caso1: Sem threads
+    // Deve adicionar o comando de tempo.
 
-    //Caso2:
+    //NÃO ESTÁ FUNCIONANDO AINDA
+    for (int i = 0; i < tam; i++){
+        if((vet[i] % 2 == 0) || (vet[i] % 5 == 0)){
+            vet[i] = 0;            
+        }
+    }
+    imprime(vet, tam);
 
-    //Caso3:
+    //Caso2: Com threads sem semáforos
+    // Deve adicionar o comando de tempo.
+
+
+    //Caso3: Com threads com semáforos
+    // Deve adicionar o comando de tempo.
+
 
     free(vet);
     return 0;
