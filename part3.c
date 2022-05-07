@@ -24,11 +24,12 @@ int main () {
     // Criação de vetor.
     int tam = 10;
     int vet[tam];
+
+    //Para checar se o vai de 1 a 100: srand(time(0));
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
     //Checagem de vetor:
-    srand(time(0));
     for (int i = 0; i < tam; i++){
         printf("%d ", vet[i]);
     }
