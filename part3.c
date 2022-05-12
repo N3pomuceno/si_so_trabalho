@@ -29,7 +29,7 @@ int correct(){
 
 int main () {
     // CRIAÇÃO DO VETOR.
-    int tam = 10;
+    int tam = 30;
     
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
@@ -44,12 +44,25 @@ int main () {
     // Deve adicionar o comando de tempo.
 
     //NÃO ESTÁ FUNCIONANDO AINDA
+    int cont = 0;
     for (int i = 0; i < tam; i++){
         if((vet[i] % 2 == 0) || (vet[i] % 5 == 0)){
-            vet[i] = 0;            
+            vet[i] = 0;          
+        } else {
+            cont++;
+        }
+    }
+    printf("%d\n", cont);
+    int *vet_result = (int *)malloc(sizeof(int)*(cont));
+    int cont2 = 0;
+    for (int i = 0; i < tam; i++){
+        if (vet[i] != 0){
+            vet_result[cont2] = vet[i];
+            cont2++;
         }
     }
     imprime(vet, tam);
+    imprime(vet_result, cont);
 
     //Caso2: Com threads sem semáforos
     // Deve adicionar o comando de tempo.
@@ -58,7 +71,7 @@ int main () {
     //Caso3: Com threads com semáforos
     // Deve adicionar o comando de tempo.
 
-
+    free(vet_result);
     free(vet);
     return 0;
 }
