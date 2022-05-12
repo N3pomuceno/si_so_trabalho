@@ -76,6 +76,8 @@ int main () {
 
 
     //Caso2: Com threads sem semáforos
+    //Precisaria criar um outro vetor?
+    //Inicializar as threads.
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
@@ -86,7 +88,7 @@ int main () {
         exit(1);
     }
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
+    printf("Quantidade de nanosegundos que levou para fazer com thread sem semáforo:\n %'ld ns.\n", tempo_levado_sem_thread);
 
 
     //Caso3: Com threads com semáforos
