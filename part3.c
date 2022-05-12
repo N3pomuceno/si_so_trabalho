@@ -28,8 +28,10 @@ int correct(){
 }
 
 int main () {
+    //Marcação de tempo;
+    struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 30;
+    int tam = 100000;
     
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
@@ -38,11 +40,13 @@ int main () {
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
-    imprime (vet, tam);
+    //imprime (vet, tam);
 
     //Caso1: Sem threads
-    // Deve adicionar o comando de tempo.
-
+    if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
     //NÃO ESTÁ FUNCIONANDO AINDA
     int cont = 0;
     for (int i = 0; i < tam; i++){
@@ -61,11 +65,28 @@ int main () {
             cont2++;
         }
     }
-    imprime(vet, tam);
-    imprime(vet_result, cont);
+    // imprime(vet, tam);
+    // imprime(vet_result, cont);
+    if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
+    long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
+
 
     //Caso2: Com threads sem semáforos
-    // Deve adicionar o comando de tempo.
+    if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
+
+    if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
+        printf("Error: clock_gettime failed\n");
+        exit(1);
+    }
+    long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
 
     //Caso3: Com threads com semáforos
