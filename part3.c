@@ -47,7 +47,6 @@ int main () {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    //NÃO ESTÁ FUNCIONANDO AINDA
     int cont = 0;
     for (int i = 0; i < tam; i++){
         if((vet[i] % 2 == 0) || (vet[i] % 5 == 0)){
@@ -56,7 +55,7 @@ int main () {
             cont++;
         }
     }
-    printf("%d\n", cont);
+    
     int *vet_result = (int *)malloc(sizeof(int)*(cont));
     int cont2 = 0;
     for (int i = 0; i < tam; i++){
@@ -87,7 +86,7 @@ int main () {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
+    long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer com thread sem semáforo:\n %'ld ns.\n", tempo_levado_sem_thread);
 
 
