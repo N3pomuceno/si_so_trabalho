@@ -74,12 +74,13 @@ int main () {
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
     int tam = 100000;
-    int tam2 = tam;
 
+    Param *sem_semaphore = (Param *) malloc(sizeof(Param));
+    sem_semaphore->tam = tam;
+    sem_semaphore->vet = (int *)malloc(sizeof(int)*tam);
 
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
-    int *vet2 = (int *)malloc(sizeof(int)*tam);
 
     //Para checar se o vai de 1 a 100: srand(time(0));
     for (int i = 0; i < tam; i++){
@@ -87,7 +88,7 @@ int main () {
     }
     //imprime (vet, tam);
 
-    copia(vet, vet2, tam);
+    copia(vet, sem_semaphore->vet, tam);
 
     //Caso1: Sem threads
     //imprime(vet, tam);
@@ -118,10 +119,6 @@ int main () {
     //Caso2: Com threads com semáforos
     //Precisaria criar um outro vetor?
     //Inicializar as threads.
-    Param *sem_semaphore;
-    sem_semaphore->tam = tam2;
-    sem_semaphore->vet = vet2;
-
     int num_de_threads = 2;
     thrd_t threads[num_de_threads];
     int prot;
@@ -158,6 +155,7 @@ int main () {
     int correcao = correct(vet, sem_semaphore->vet, tam);
 
     free(vet);
-    free(vet2);
+    free(sem_semaphore->vet);
+    free(sem_semaphore);
     return 0;
 }
