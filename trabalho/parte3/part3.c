@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <threads.h>
-#include <semaphore.h>
 #include <time.h>
 
-sem_t *r = 1;
-
+mtx_t *mtx;
+int mtx_init(mtx_t *mtx, int mtx_plain);
 
 typedef struct param {
     int *vet;
@@ -39,27 +38,25 @@ void *remover (void *param) {
     if (p->ident == 0){  // Caso múltiplo de 2
         for (int i = p->tam - 1; i >= 0; i--){
             if (p->vet[i] % 2 == 0) {
-                sem_wait(r);
-                _remocao(p->vet,p->tam,i);
+                int mtx_lock(mtx_t *mtx);
+                for (int j = i; j < p->tam -1; j++){
+                    p->vet[j] = p->vet[j+1];
+                }
                 p->tam--;
-                sem_signal(r);
+                int mtx_unlock(mtx_t *mtx);
             }
         }
     } else { // Caso múltiplo de 5
         for (int i = p->tam - 1; i >= 0; i--){
             if (p->vet[i] % 5 == 0) {
-                sem_wait(r);
-                _remocao(p->vet,p->tam,i);
+                int mtx_lock(mtx_t *mtx);
+                for (int j = i; j < p->tam -1; j++){
+                    p->vet[j] = p->vet[j+1];
+                }
                 p->tam--;
-                sem_signal(r);
+                int mtx_unlock(mtx_t *mtx);
             }
         }
-    }
-}
-
-void _remocao(int *vet, int tam, int pos){
-    for (int j = pos; j < tam-1; j++){
-        vet[j] = vet[j+1];
     }
 }
 
@@ -133,6 +130,9 @@ int main () {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
+
+
+
     for (int i = 0; i < num_de_threads; i++){
         sem_semaphore->ident = i;
         prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)sem_semaphore);
@@ -144,7 +144,9 @@ int main () {
     for (int i = 0; i < num_de_threads; i++){
         thrd_join(threads[i], NULL);
     }
-    sem_close(r);
+
+    //Faz sentido colocar isso aqui?
+    //void mtx_destroy(mtx_t *mtx);
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
