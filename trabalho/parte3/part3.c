@@ -3,7 +3,7 @@
 #include <threads.h>
 #include <time.h>
 
-mtx_t *mtx;
+mtx_t mtx;
 
 typedef struct param {
     int *vet;
@@ -37,23 +37,23 @@ void *remover (void *param) {
     if (p->ident == 0){  // Caso múltiplo de 2
         for (int i = p->tam - 1; i >= 0; i--){
             if (p->vet[i] % 2 == 0) {
-                int mtx_lock(mtx_t *mtx);
+                mtx_lock(&mtx);
                 for (int j = i; j < p->tam -1; j++){
                     p->vet[j] = p->vet[j+1];
                 }
                 p->tam--;
-                int mtx_unlock(mtx_t *mtx);
+                mtx_unlock(&mtx);
             }
         }
     } else { // Caso múltiplo de 5
         for (int i = p->tam - 1; i >= 0; i--){
             if (p->vet[i] % 5 == 0) {
-                int mtx_lock(mtx_t *mtx);
+                mtx_lock(&mtx);
                 for (int j = i; j < p->tam -1; j++){
                     p->vet[j] = p->vet[j+1];
                 }
                 p->tam--;
-                int mtx_unlock(mtx_t *mtx);
+                mtx_unlock(&mtx);
             }
         }
     }
@@ -73,7 +73,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 10;
+    int tam = 100;
 
     Param *sem_semaphore = (Param *) malloc(sizeof(Param));
     sem_semaphore->tam = tam;
@@ -122,10 +122,11 @@ int main () {
     thrd_t threads[num_de_threads];
     int prot;
 
-    if (mtx_init(mtx_t *mtx, mtx_plain) != thrd_success){
-        printf("Error initializing the mutex.\n");
-        exit(1);
-    }
+    if (mtx_init(&mtx, mtx_plain) != thrd_success){
+            printf("Error initializing the mutex.\n");
+            exit(1);
+        }
+
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
@@ -143,7 +144,7 @@ int main () {
         thrd_join(threads[i], NULL);
     }
 
-    void mtx_destroy(mtx_t *mtx);
+    mtx_destroy(&mtx);
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
