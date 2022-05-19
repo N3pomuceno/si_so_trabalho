@@ -4,6 +4,15 @@
 #include <semaphore.h>
 #include <time.h>
 
+sem_t *r = 1;
+
+
+typedef struct param {
+    int *vet;
+    int tam;
+    int ident;
+} Param;
+
 /* 
 Serão 3 casos para serem verificados:
 1 - Sem Threads;
@@ -25,12 +34,40 @@ void *copia (int *v1, int *v2, int tam) {
     }
 }
 
-void *remover () {
+void *remover (void *param) {
+    Param *p = (Param *) param;
+    if (p->ident == 0){  // Caso múltiplo de 2
+        for (int i = p->tam - 1; i >= 0; i--){
+            if (p->vet[i] % 2 == 0) {
+                sem_wait(r);
+                _remocao(p->vet,p->tam,i);
+                p->tam--;
+                sem_signal(r);
+            }
+        }
+    } else { // Caso múltiplo de 5
+        for (int i = p->tam - 1; i >= 0; i--){
+            if (p->vet[i] % 5 == 0) {
+                sem_wait(r);
+                _remocao(p->vet,p->tam,i);
+                p->tam--;
+                sem_signal(r);
+            }
+        }
+    }
+}
+
+void _remocao(){
 
 }
 
-int correct(){
-
+int correct(int *v1, int *v2, int tam){
+    for (int i = 0; i < tam; i++){
+        if (v1[i] != v2[2]){
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int main () {
@@ -39,13 +76,11 @@ int main () {
     // CRIAÇÃO DO VETOR.
     int tam = 100000;
     int tam2 = tam;
-    int tam3 = tam;
 
 
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
     int *vet2 = (int *)malloc(sizeof(int)*tam);
-    int *vet3 = (int *)malloc(sizeof(int)*tam);
 
     //Para checar se o vai de 1 a 100: srand(time(0));
     for (int i = 0; i < tam; i++){
@@ -54,7 +89,6 @@ int main () {
     //imprime (vet, tam);
 
     copia(vet, vet2, tam);
-    copia(vet, vet3, tam);
 
     //Caso1: Sem threads
     //imprime(vet, tam);
@@ -80,10 +114,14 @@ int main () {
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
+    // Explicação, não é possível fazer esse caso sem a utilização de semáforos pois 
 
-    //Caso2: Com threads sem semáforos
+    //Caso2: Com threads com semáforos
     //Precisaria criar um outro vetor?
     //Inicializar as threads.
+    Param *sem_semaphore;
+    sem_semaphore->tam = tam2;
+    sem_semaphore->vet = vet2;
 
     int num_de_threads = 2;
     thrd_t threads[num_de_threads];
@@ -93,23 +131,29 @@ int main () {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    for (int i = 0; i < 2; i++){
-        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)vet);
+    for (int i = 0; i < num_de_threads; i++){
+        sem_semaphore->ident = i;
+        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)sem_semaphore);
+        if (prot == thrd_error) {
+            printf("Error creating thread!\n");
+            exit(1);
+        }
     }
+    for (int i = 0; i < num_de_threads; i++){
+        thrd_join(threads[i], NULL);
+    }
+    sem_close(r);
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer com thread sem semáforo:\n %'ld ns.\n", tempo_levado_com_thread);
+    long tempo_levado_com_semaforo = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("Quantidade de nanosegundos que levou para fazer com thread com semáforo:\n %'ld ns.\n", tempo_levado_com_semaforo);
 
-
-    //Caso3: Com threads com semáforos
-
+    int correcao = correct(vet, sem_semaphore->vet, tam);
 
     free(vet);
     free(vet2);
-    free(vet3);
     return 0;
 }
