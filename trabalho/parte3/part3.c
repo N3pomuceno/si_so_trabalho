@@ -38,7 +38,10 @@ int main () {
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
     int tam = 100000;
-    
+    int tam2 = tam;
+    int tam3 = tam;
+
+
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
     int *vet2 = (int *)malloc(sizeof(int)*tam);
@@ -54,19 +57,26 @@ int main () {
     copia(vet, vet3, tam);
 
     //Caso1: Sem threads
-    //REFAZER
+    //imprime(vet, tam);
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
+    for (int i = tam-1; i >= 0; i--) {
+        if ((vet[i] % 2 == 0)||(vet[i] % 5 == 0)){
+            for (int j = i; j < tam - 1; j++){
+                vet[j] = vet[j+1];
+            }
+            tam--;
+        }
+    }
     
-
     // imprime(vet, tam);
-    // imprime(vet_result, cont);
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
+    //imprime(vet, tam);
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
@@ -92,7 +102,7 @@ int main () {
         exit(1);
     }
     long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("Quantidade de nanosegundos que levou para fazer com thread sem semáforo:\n %'ld ns.\n", tempo_levado_sem_thread);
+    printf("Quantidade de nanosegundos que levou para fazer com thread sem semáforo:\n %'ld ns.\n", tempo_levado_com_thread);
 
 
     //Caso3: Com threads com semáforos
