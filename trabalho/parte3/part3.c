@@ -4,7 +4,6 @@
 #include <time.h>
 
 mtx_t *mtx;
-int mtx_init(mtx_t *mtx, int mtx_plain);
 
 typedef struct param {
     int *vet;
@@ -58,6 +57,7 @@ void *remover (void *param) {
             }
         }
     }
+    imprime (p->vet, p->tam);
 }
 
 int correct(int *v1, int *v2, int tam){
@@ -73,7 +73,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 100000;
+    int tam = 10;
 
     Param *sem_semaphore = (Param *) malloc(sizeof(Param));
     sem_semaphore->tam = tam;
@@ -86,7 +86,7 @@ int main () {
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
-    //imprime (vet, tam);
+    imprime (vet, tam);
 
     copia(vet, sem_semaphore->vet, tam);
 
@@ -105,12 +105,11 @@ int main () {
         }
     }
     
-    // imprime(vet, tam);
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    //imprime(vet, tam);
+    imprime(vet, tam);
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
@@ -123,12 +122,14 @@ int main () {
     thrd_t threads[num_de_threads];
     int prot;
 
+    if (mtx_init(mtx_t *mtx, mtx_plain) != thrd_success){
+        printf("Error initializing the mutex.\n");
+        exit(1);
+    }
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-
-
 
     for (int i = 0; i < num_de_threads; i++){
         sem_semaphore->ident = i;
@@ -142,8 +143,7 @@ int main () {
         thrd_join(threads[i], NULL);
     }
 
-    //Faz sentido colocar isso aqui?
-    //void mtx_destroy(mtx_t *mtx);
+    void mtx_destroy(mtx_t *mtx);
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
@@ -152,7 +152,11 @@ int main () {
     long tempo_levado_com_semaforo = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer com thread com semáforo:\n %'ld ns.\n", tempo_levado_com_semaforo);
 
+    double razao = tempo_levado_sem_thread / (float)tempo_levado_com_semaforo;
+    printf("Razão entre tempos: \n %f\n", razao);
+
     int correcao = correct(vet, sem_semaphore->vet, tam);
+    printf(" %d \n", correcao);
 
     free(vet);
     free(sem_semaphore->vet);
