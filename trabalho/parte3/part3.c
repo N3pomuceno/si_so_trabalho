@@ -19,6 +19,12 @@ void imprime(int *vet,int tam){
     printf("\n");
 }
 
+void *copia (int *v1, int *v2, int tam) {
+    for (int i = 0; i < tam; i++){
+        v2[i] = v1[i];
+    }
+}
+
 void *remover () {
 
 }
@@ -35,6 +41,8 @@ int main () {
     
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
+    int *vet2 = (int *)malloc(sizeof(int)*tam);
+    int *vet3 = (int *)malloc(sizeof(int)*tam);
 
     //Para checar se o vai de 1 a 100: srand(time(0));
     for (int i = 0; i < tam; i++){
@@ -42,28 +50,17 @@ int main () {
     }
     //imprime (vet, tam);
 
+    copia(vet, vet2, tam);
+    copia(vet, vet3, tam);
+
     //Caso1: Sem threads
+    //REFAZER
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    int cont = 0;
-    for (int i = 0; i < tam; i++){
-        if((vet[i] % 2 == 0) || (vet[i] % 5 == 0)){
-            vet[i] = 0;          
-        } else {
-            cont++;
-        }
-    }
     
-    int *vet_result = (int *)malloc(sizeof(int)*(cont));
-    int cont2 = 0;
-    for (int i = 0; i < tam; i++){
-        if (vet[i] != 0){
-            vet_result[cont2] = vet[i];
-            cont2++;
-        }
-    }
+
     // imprime(vet, tam);
     // imprime(vet_result, cont);
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
@@ -77,9 +74,17 @@ int main () {
     //Caso2: Com threads sem semáforos
     //Precisaria criar um outro vetor?
     //Inicializar as threads.
+
+    int num_de_threads = 2;
+    thrd_t threads[num_de_threads];
+    int prot;
+
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
+    }
+    for (int i = 0; i < 2; i++){
+        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)vet);
     }
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
@@ -91,9 +96,10 @@ int main () {
 
 
     //Caso3: Com threads com semáforos
-    // Deve adicionar o comando de tempo.
 
-    free(vet_result);
+
     free(vet);
+    free(vet2);
+    free(vet3);
     return 0;
 }

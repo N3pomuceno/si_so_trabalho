@@ -107,7 +107,7 @@ int main(void) {
         }
     }
 
-    // CALCULO SEM THREAD (falta adicionar o tempo ainda)
+    // CALCULO SEM THREAD 
     if (clock_gettime(CLOCK_REALTIME, &start) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
