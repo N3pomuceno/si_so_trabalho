@@ -57,8 +57,10 @@ void *remover (void *param) {
     }
 }
 
-void _remocao(){
-
+void _remocao(int *vet, int tam, int pos){
+    for (int j = pos; j < tam-1; j++){
+        vet[j] = vet[j+1];
+    }
 }
 
 int correct(int *v1, int *v2, int tam){
