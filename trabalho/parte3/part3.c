@@ -7,7 +7,7 @@ mtx_t mutex;
 
 typedef struct param {
     int *vet;
-    int tam;
+    int *tam;
     int ident;
 } Param;
 
@@ -34,27 +34,14 @@ void *copia (int *v1, int *v2, int tam) {
 void *remover (void *param) {
     Param *p = (Param *) param;
     //printf("%d\n", p->ident);  // Identificador de thread
-    if (p->ident == 1){  // Caso múltiplo de 2
-        for (int m = p->tam - 1; m >= 0; m--){
-            if (p->vet[m] % 2 == 0) {
-                mtx_lock(&mutex);
-                for (int n = m; n < p->tam -1; n++){
-                    p->vet[n] = p->vet[n+1];
-                }
-                p->tam--;
-                mtx_unlock(&mutex);
+    for (int m = *(p->tam) - 1; m >= 0; m--){
+        if (p->vet[m] % p->ident == 0) {
+            mtx_lock(&mutex);
+            for (int n = m; n < *(p->tam) -1; n++){
+                p->vet[n] = p->vet[n+1];
             }
-        }
-    } else { // Caso múltiplo de 5
-        for (int l = p->tam - 1; l >= 0; l--){
-            if (p->vet[l] % 5 == 0) {
-                mtx_lock(&mutex);
-                for (int k = l; k < p->tam -1; k++){
-                    p->vet[k] = p->vet[k+1];
-                }
-                p->tam--;
-                mtx_unlock(&mutex);
-            }
+            *(p->tam)--;
+            mtx_unlock(&mutex);
         }
     }
 }
@@ -73,7 +60,7 @@ int main () {
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
     int tam = 10000;
-
+    int tam2 = tam;
 
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
@@ -90,8 +77,10 @@ int main () {
     Param com_semaphore[2];
     for (int i = 0; i < 2; i++){
         com_semaphore[i].vet = vet2;
-        com_semaphore[i].tam = tam;
+        com_semaphore[i].tam = &tam2;
     }
+    com_semaphore[0].ident = 2;
+    com_semaphore[1].ident = 5;
 
     //Caso1: Sem threads
     //imprime(vet, tam);
@@ -116,7 +105,7 @@ int main () {
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
-    // Explicação, não é possível fazer esse caso sem a utilização de semáforos pois 
+    // Explicação, não é possível fazer esse caso sem a utilização de semáforos pois vai dar xabu
 
     //Caso2: Com threads com semáforos
     //Precisaria criar um outro vetor?
@@ -136,7 +125,7 @@ int main () {
     }
 
     for (int i = 0; i < num_de_threads; i++){
-        com_semaphore[i].ident = i;
+        //com_semaphore[i].ident = i;
         prot = thrd_create(&threads[i], (thrd_start_t)remover,(void *)&com_semaphore[i]);
         if (prot == thrd_error) {
             printf("Error creating thread!\n");
