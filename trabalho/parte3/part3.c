@@ -89,13 +89,10 @@ int main () {
     copia(vet, vet2, tam);
 
     Param com_semaphore[2];
-    com_semaphore[0].tam = tam;
-    com_semaphore[1].tam = tam;
-    com_semaphore[0].vet = vet2;
-    com_semaphore[1].vet = vet2;
-    com_semaphore[0].ident = 0;
-    com_semaphore[1].ident = 1;
-
+    for (int i = 0; i < 2; i++){
+        com_semaphore[i].vet = vet2;
+        com_semaphore[i].tam = tam;
+    }
 
     //Caso1: Sem threads
     //imprime(vet, tam);
@@ -140,6 +137,7 @@ int main () {
     }
 
     for (int i = 0; i < num_de_threads; i++){
+        com_semaphore[i].ident = i;
         prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)com_semaphore[i]);
         if (prot == thrd_error) {
             printf("Error creating thread!\n");
