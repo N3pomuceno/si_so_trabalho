@@ -30,15 +30,15 @@ typedef struct arg_struct {
     int arg5;   // Identificação de Thread
 }Args;
 
-void imprime(int **mat){
-    for (int i = 0; i < 20; i++){
-        for (int j = 0; j < 20; j++){
-            printf("%d ", mat[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
+// void imprime(int **mat){
+//     for (int i = 0; i < 20; i++){
+//         for (int j = 0; j < 20; j++){
+//             printf("%d ", mat[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+// }
 
 
 
@@ -88,7 +88,7 @@ int main(void) {
 
     // Criação de matrizes A, B, C.
     int **A, **B, **C;
-    int dim = 20;
+    int dim = 1000;
 
     A = (int **)malloc(sizeof(int *)*dim);
     B = (int **)malloc(sizeof(int *)*dim);
@@ -123,7 +123,7 @@ int main(void) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    imprime(C);
+
     // Tempo levado:
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer a soma sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
