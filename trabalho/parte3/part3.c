@@ -33,7 +33,7 @@ void *copia (int *v1, int *v2, int tam) {
 
 void *remover (void *param) {
     Param *p = (Param *) param;
-    printf("%d\n", p->ident);
+    //printf("%d\n", p->ident);  // Identificador de thread
     if (p->ident == 1){  // Caso múltiplo de 2
         for (int m = p->tam - 1; m >= 0; m--){
             if (p->vet[m] % 2 == 0) {
@@ -57,12 +57,11 @@ void *remover (void *param) {
             }
         }
     }
-    imprime (p->vet, p->tam);
 }
 
 int correct(int *v1, int *v2, int tam){
     for (int i = 0; i < tam; i++){
-        if (v1[i] != v2[2]){
+        if (v1[i] != v2[i]){
             return 0;
         }
     }
@@ -73,7 +72,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 50;
+    int tam = 100;
 
 
     // Alocação dinâmica:
@@ -85,7 +84,7 @@ int main () {
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
-    imprime (vet, tam);
+
     copia(vet, vet2, tam);
 
     Param com_semaphore[2];
@@ -113,7 +112,7 @@ int main () {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
-    imprime(vet, tam);
+
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
 
@@ -138,7 +137,7 @@ int main () {
 
     for (int i = 0; i < num_de_threads; i++){
         com_semaphore[i].ident = i;
-        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)com_semaphore[i]);
+        prot = thrd_create(&threads[i], (thrd_start_t)remover,(void *)&com_semaphore[i]);
         if (prot == thrd_error) {
             printf("Error creating thread!\n");
             exit(1);
@@ -162,10 +161,10 @@ int main () {
     double razao = tempo_levado_sem_thread / (float)tempo_levado_com_semaforo;
     printf("Razão entre tempos: \n %f\n", razao);
 
-    int correcao = correct(vet, com_semaphore[0].vet, tam);
-    printf(" %d \n", correcao);
+    int correcao = correct(vet, vet2, tam);
+    printf("Correção, se 1 está correto, se 0 está errado:\n %d \n", correcao);
 
     free(vet);
-    free(com_semaphore[0].vet);
+    free(vet2);
     return 0;
 }
