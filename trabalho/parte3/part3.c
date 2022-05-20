@@ -3,7 +3,7 @@
 #include <threads.h>
 #include <time.h>
 
-mtx_t mtx;
+mtx_t mutex;
 
 typedef struct param {
     int *vet;
@@ -14,8 +14,7 @@ typedef struct param {
 /* 
 Serão 3 casos para serem verificados:
 1 - Sem Threads;
-2 - Com Threads sem semáforos;
-3 - Com Threads com semáforos;
+2 - Com Threads com semáforos;
 
 */
 
@@ -34,26 +33,27 @@ void *copia (int *v1, int *v2, int tam) {
 
 void *remover (void *param) {
     Param *p = (Param *) param;
-    if (p->ident == 0){  // Caso múltiplo de 2
-        for (int i = p->tam - 1; i >= 0; i--){
-            if (p->vet[i] % 2 == 0) {
-                mtx_lock(&mtx);
-                for (int j = i; j < p->tam -1; j++){
-                    p->vet[j] = p->vet[j+1];
+    printf("%d\n", p->ident);
+    if (p->ident == 1){  // Caso múltiplo de 2
+        for (int m = p->tam - 1; m >= 0; m--){
+            if (p->vet[m] % 2 == 0) {
+                mtx_lock(&mutex);
+                for (int n = m; n < p->tam -1; n++){
+                    p->vet[n] = p->vet[n+1];
                 }
                 p->tam--;
-                mtx_unlock(&mtx);
+                mtx_unlock(&mutex);
             }
         }
     } else { // Caso múltiplo de 5
-        for (int i = p->tam - 1; i >= 0; i--){
-            if (p->vet[i] % 5 == 0) {
-                mtx_lock(&mtx);
-                for (int j = i; j < p->tam -1; j++){
-                    p->vet[j] = p->vet[j+1];
+        for (int l = p->tam - 1; l >= 0; l--){
+            if (p->vet[l] % 5 == 0) {
+                mtx_lock(&mutex);
+                for (int k = l; k < p->tam -1; k++){
+                    p->vet[k] = p->vet[k+1];
                 }
                 p->tam--;
-                mtx_unlock(&mtx);
+                mtx_unlock(&mutex);
             }
         }
     }
@@ -122,7 +122,7 @@ int main () {
     thrd_t threads[num_de_threads];
     int prot;
 
-    if (mtx_init(&mtx, mtx_plain) != thrd_success){
+    if (mtx_init(&mutex, mtx_plain) != thrd_success){
             printf("Error initializing the mutex.\n");
             exit(1);
         }
@@ -140,16 +140,18 @@ int main () {
             exit(1);
         }
     }
+
     for (int i = 0; i < num_de_threads; i++){
         thrd_join(threads[i], NULL);
     }
-
-    mtx_destroy(&mtx);
 
     if (clock_gettime(CLOCK_REALTIME, &end) == -1) {
         printf("Error: clock_gettime failed\n");
         exit(1);
     }
+
+    mtx_destroy(&mutex);
+
     long tempo_levado_com_semaforo = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer com thread com semáforo:\n %'ld ns.\n", tempo_levado_com_semaforo);
 
