@@ -6,10 +6,9 @@
 #include <sys/syscall.h>
 
 void *identifier(void *id){
-    long ident = (intptr_t)id;
+    char *nome = (char *)id;
     long ident2 = syscall(SYS_gettid);
 
-    char nome = "Thread_%ld", ident;
     printf ("Eu sou a %s e meu ID pela threads.h é %lu,\njá pelo Sys/syscall é %lu.\n\n", nome, thrd_current(), ident2);
 }
 
@@ -22,20 +21,23 @@ int main (void){
 
     // Criando threads:
     thrd_t threads[num_de_threads];
+    char nome_da_thread[10];
 
     //Variavel auxiliar para reconhecimento de error;
     int prot;
 
     for (int i = 0; i < num_de_threads; i++){
 
-        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)(intptr_t)i);
+        sprintf(nome_da_thread, "Thread_%d", (i+1));
+        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)nome_da_thread);
         if (prot == thrd_error){
             printf("Erro na criação da thread\n");
             exit(1);
         }
+        thrd_join(threads[i], NULL);
     }
     // Finaliza a atual execução de thread e libera recurso.
-    thrd_exit(0);
+    return 0;
 }
 
 // Claramente os valores das ID's são diferentes e eles podem ser explicados por um cara online:
