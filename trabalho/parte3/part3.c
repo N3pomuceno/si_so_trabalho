@@ -33,15 +33,15 @@ void *copia (int *v1, int *v2, int tam) {
 
 void *remover (void *param) {
     Param *p = (Param *) param;
-    //printf("%d\n", p->ident);  // Múltiplo
+    printf("%d\n", p->ident);  // Múltiplo
     printf("%d\n", *(p->tam));
-    for (int m = *(p->tam) - 1; m >= 0; m--){
+    for (int m = (*(p->tam) - 1); m >= 0; m--){
         if (p->vet[m] % p->ident == 0) {
             mtx_lock(&mutex);
-            for (int n = m; n < *(p->tam) -1; n++){
+            for (int n = m; n < (*(p->tam) -1); n++){
                 p->vet[n] = p->vet[n+1];
             }
-            *(p->tam)--;
+            *(p->tam) -= 1;
             mtx_unlock(&mutex);
         }
     }
@@ -64,7 +64,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 200;
+    int tam = 300;
     int tam2 = tam;
 
     // Alocação dinâmica:
