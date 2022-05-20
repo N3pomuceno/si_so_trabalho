@@ -8,7 +8,9 @@
 void *identifier(void *id){
     long ident = (intptr_t)id;
     long ident2 = syscall(SYS_gettid);
-    printf ("Eu sou a thread %ld e meu ID pela threads.h é %lu,\njá pelo Sys/syscall é %lu.\n\n", ident, thrd_current(), ident2);
+
+    char nome = "Thread_%ld", ident;
+    printf ("Eu sou a %s e meu ID pela threads.h é %lu,\njá pelo Sys/syscall é %lu.\n\n", nome, thrd_current(), ident2);
 }
 
 int main (void){

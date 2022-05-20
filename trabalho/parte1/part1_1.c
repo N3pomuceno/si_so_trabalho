@@ -1,20 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <threads.h>
 
 void *identifier(void *id){
     // Pegando parâmetro de identificação e passando para casting de long.
-    long ident = (intptr_t)id;
+    char *nome = (char *)id;
 
     // printf para colocar a frase desejada.
-    printf ("Eu sou a thread %ld e meu ID é %lu.\n", ident, thrd_current());
+    printf ("Eu sou a %s e meu ID é %lu.\n", nome, thrd_current());
 }
 
 int main (void){
 
     // Definindo número de threads;
     int num_de_threads;
+    char nome_da_thread[10];
+
     printf("Quantas threads deseja criar?\n");
     scanf("%d", &num_de_threads);
 
@@ -31,14 +32,14 @@ int main (void){
         // Segundo  Argumento: thrd_start_t __func => Ponteiro para função que a thread irá executar
         // Terceiro Argumento: void *__arg => Argumento que pode ser levado para a função. 
 
-        // A utilização do intptr_t é para evitar o warning causado pela diferença de tamanho entre ponteiro e o inteiro, 
-        // que não necessariamente sejam diferentes, mas que possam ser.
-        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)(intptr_t)i);
+        sprintf(nome_da_thread, "Thread_%d", (i+1));
+        prot = thrd_create(&threads[i], (thrd_start_t)identifier, (void *)nome_da_thread);
         if (prot == thrd_error){
             printf("Erro na criação da thread\n");
             exit(1);
         }
+        thrd_join(threads[i], NULL);
     }
     // Finaliza a atual execução de thread e libera recurso.
-    thrd_exit(0);
+    return 0;
 }
