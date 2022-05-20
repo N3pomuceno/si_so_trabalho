@@ -160,7 +160,7 @@ int main(void) {
     exit(1);
     }
 
-    imprime(C);
+    //imprime(C);
     // Tempo levado:
     long tempo_levado_com_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer a soma com thread:\n %'ld ns.\n", tempo_levado_com_thread);
