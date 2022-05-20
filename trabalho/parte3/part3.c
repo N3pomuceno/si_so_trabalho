@@ -33,7 +33,8 @@ void *copia (int *v1, int *v2, int tam) {
 
 void *remover (void *param) {
     Param *p = (Param *) param;
-    //printf("%d\n", p->ident);  // Identificador de thread
+    //printf("%d\n", p->ident);  // Múltiplo
+    printf("%d\n", *(p->tam));
     for (int m = *(p->tam) - 1; m >= 0; m--){
         if (p->vet[m] % p->ident == 0) {
             mtx_lock(&mutex);
@@ -44,6 +45,10 @@ void *remover (void *param) {
             mtx_unlock(&mutex);
         }
     }
+    printf("%d\n", *(p->tam));
+    // mtx_lock(&mutex);
+    // imprime(p->vet, p->tam);
+    // mtx_unlock(&mutex);
 }
 
 int correct(int *v1, int *v2, int tam){
@@ -59,7 +64,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 10000;
+    int tam = 200;
     int tam2 = tam;
 
     // Alocação dinâmica:
@@ -104,7 +109,7 @@ int main () {
 
     long tempo_levado_sem_thread = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
     printf("Quantidade de nanosegundos que levou para fazer sem thread:\n %'ld ns.\n", tempo_levado_sem_thread);
-
+    printf("%d\n", tam);
     // Explicação, não é possível fazer esse caso sem a utilização de semáforos pois vai dar xabu
 
     //Caso2: Com threads com semáforos
