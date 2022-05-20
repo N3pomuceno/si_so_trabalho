@@ -73,22 +73,29 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 100;
+    int tam = 50;
 
-    Param *sem_semaphore = (Param *) malloc(sizeof(Param));
-    sem_semaphore->tam = tam;
-    sem_semaphore->vet = (int *)malloc(sizeof(int)*tam);
 
     // Alocação dinâmica:
     int *vet = (int *)malloc(sizeof(int)*tam);
+    int *vet2 = (int *)malloc(sizeof(int)*tam);
+
 
     //Para checar se o vai de 1 a 100: srand(time(0));
     for (int i = 0; i < tam; i++){
         vet[i] = (rand() % 100) + 1;
     }
     imprime (vet, tam);
+    copia(vet, vet2, tam);
 
-    copia(vet, sem_semaphore->vet, tam);
+    Param com_semaphore[2];
+    com_semaphore[0].tam = tam;
+    com_semaphore[1].tam = tam;
+    com_semaphore[0].vet = vet2;
+    com_semaphore[1].vet = vet2;
+    com_semaphore[0].ident = 0;
+    com_semaphore[1].ident = 1;
+
 
     //Caso1: Sem threads
     //imprime(vet, tam);
@@ -133,8 +140,7 @@ int main () {
     }
 
     for (int i = 0; i < num_de_threads; i++){
-        sem_semaphore->ident = i;
-        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)sem_semaphore);
+        prot = thrd_create(&threads[i], (thrd_start_t)remover, (void *)com_semaphore[i]);
         if (prot == thrd_error) {
             printf("Error creating thread!\n");
             exit(1);
@@ -158,11 +164,10 @@ int main () {
     double razao = tempo_levado_sem_thread / (float)tempo_levado_com_semaforo;
     printf("Razão entre tempos: \n %f\n", razao);
 
-    int correcao = correct(vet, sem_semaphore->vet, tam);
+    int correcao = correct(vet, com_semaphore[0].vet, tam);
     printf(" %d \n", correcao);
 
     free(vet);
-    free(sem_semaphore->vet);
-    free(sem_semaphore);
+    free(com_semaphore[0].vet);
     return 0;
 }
