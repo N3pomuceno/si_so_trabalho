@@ -72,7 +72,7 @@ int main () {
     //Marcação de tempo;
     struct timespec start, end;
     // CRIAÇÃO DO VETOR.
-    int tam = 100;
+    int tam = 10000;
 
 
     // Alocação dinâmica:
@@ -163,6 +163,8 @@ int main () {
 
     int correcao = correct(vet, vet2, tam);
     printf("Correção, se 1 está correto, se 0 está errado:\n %d \n", correcao);
+    // imprime(vet, tam);
+    // imprime(vet2, tam);
 
     free(vet);
     free(vet2);
